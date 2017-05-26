@@ -7,139 +7,102 @@ using static System.Console;
 
 namespace lab4
 {
-    class Arrs
+    class Program
     {
-        private static Random rnd = new Random();
-
-        public static void CreateOneDimAr(int[] mas)
+        static void PrintAnyArr(Array arr, params int[] k)
         {
-            for (int i = 0; i < mas.Length; ++i)
+            if (arr.Rank == k.Length)
             {
-                mas[i] = rnd.Next() % 100;
+                Object value = arr.GetValue(k);
+                if (value.GetType().IsArray)
+                    PrintAnyArr((Array)value);
+                else
+                    Write(value + " ");
+                return;
             }
+
+            int[] newK = new int[k.Length + 1];
+            Array.Copy(k, newK, k.Length);
+
+            int len = arr.GetLength(k.Length);
+            for (int i = 0; i < len; i++)
+            {
+                newK[newK.Length - 1] = i; 
+                PrintAnyArr(arr, newK);
+            }
+       
         }
 
-        public static void PrintArr(string name, int[] arr)
-        {
-            Console.Write(name + " : {");
-            for (int i = 0; i < arr.Length; ++i)
-            {
-                Console.Write(" " + arr[i]);
-            }
-            Console.WriteLine("}");
-        }
 
-        public static void PrintArr(int[,] arr)
+        class student
         {
-            for (int i = 0; i < arr.GetLength(0); ++i, Console.WriteLine())
+            private string name;
+            private int sumb;
+            private static Random rnd = new Random();
+
+            public static void InitAr(student[] stud)
             {
-                for (int j = 0; j < arr.GetLength(1); ++j)
+                for (int i = 0; i < stud.Length; i++)
                 {
-                    Console.Write(arr[i, j] + " ");
+                    stud[i] = new student();
                 }
             }
+
+            public void SetValue(string name)
+            {
+                this.name = name;
+                this.sumb = rnd.Next(1, 10);
+            }
+
+            public override string ToString()
+            {
+                return string.Format($"name={name},\t sumb={sumb}");
+            }
+
         }
 
-        public static void CreateArr(int[,] arr)
+        public static void PrintArObj(string name, object[] A)
         {
-            for (int i = 0; i < arr.GetLength(0); ++i)
+            WriteLine($"{name}");
+            foreach (var item in A)
             {
-                for (int j = 0; j < arr.GetLength(1); ++j)
-                {
-                    arr[i, j] = rnd.Next() % 100;
-                }
+                Write($"{item}\t");
             }
         }
-
-        public static void PrintArr(int[][] arr)
+        static void Main(string[] args)
         {
-            for (int i = 0; i < arr.Length; ++i, Console.WriteLine())
+            int[] A = { 1, 2, 3, 4, 5, 6 };
+            int[,] B = { { 1, 2, 3}, {4, 5, 6} };
+            int[][] C = new int[3][]
             {
-                for (int j = 0; j < arr[i].Length; ++j)
-                {
-                    Console.Write(arr[i][j] + " ");
-                }
-            }
-        }
+                new int[] {1, 2, 3},
+                new int[] {1, 2, 3},
+                new int[] {1, 2, 3}
+            };
 
-        public static void CreateArr(int[][] arr)
-        {
-            for (int i = 0; i < arr.Length; ++i)
+            PrintAnyArr(A);
+            WriteLine();
+            PrintAnyArr(B);
+            WriteLine();
+            PrintAnyArr(C);
+            WriteLine();
+
+            student[] s = new student[3];
+            student.InitAr(s);
+
+            s[0].SetValue("Vanya");
+            s[1].SetValue("Petya");
+            s[2].SetValue("Vasya");
+
+            for (int i = 0; i < s.Length; i++)
             {
-                for (int j = 0; j < arr[i].Length; ++j)
-                {
-                    arr[i][j] = rnd.Next() % 100;
-                }
+                WriteLine(s[i].ToString());
             }
-        }
-        //////////////////////////////////////////////////
-        public static void PrintAnyArr(Array arr)//Лаб.4 Зад.1
-        {
-            switch (arr.Rank)
-            {
-                case 1:
-                    for (int i = 0; i < arr.GetLength(0); ++i)
-                    {
-                        if (arr.GetValue(i).GetType() == typeof(Array)) PrintAnyArr((Array)arr.GetValue(i));
-                        else Console.Write(arr.GetValue(i) + " ");
-                    }
-                    Console.WriteLine();
-                    break;
-                case 2:
-                    for (int i = 0; i < arr.GetLength(0); ++i, Console.WriteLine())
-                    {
-                        for (int j = 0; j < arr.GetLength(1); ++j)
-                        {
-                            if (arr.GetValue(i, j).GetType() == typeof(Array)) PrintAnyArr((Array)arr.GetValue(i, j));
-                            else Console.Write(arr.GetValue(i, j) + " ");
-                        }
-                    }
-                    break;
-            }
-        }
 
-        public static void PrintAnyArr2(Array arr) //Лаб.4 Зад.1
-        {
-            foreach (var element in arr)
-            {
-                Console.Write(element + " ");
-            }
-        }
+            Object[] ob = new object[]{ 1, 2.5, "123", '1' };
 
-        public static void TestAllMethods(Array arr)//Лаб.4 Зад.2
-        {
-            Array b = null;
-            Array.Copy(arr, b, arr.GetLength(0));
-            arr.CopyTo(b, 0);
-            int first0 = Array.IndexOf(arr, 0);
-            int last0 = Array.LastIndexOf(arr, 0);
-            Array.Reverse(b);
-            Array.Sort(b);
-            Array.BinarySearch(b, 33);
-        }
+            PrintArObj("ob", ob);
 
-        public static void PrintArr(Object arr)//Лаб.4 Зад.3
-        {
-            if (arr.GetType() == typeof(Array))
-            {
-                foreach (var element in (Array)arr)
-                {
-                    Console.Write(element + " ");
-                }
-                Console.WriteLine();
-            }
-            else Console.WriteLine(arr);
         }
-
-        public static void PrintArObj(string name, object[] A)//Лаб.4 Зад.5
-        {
-            Console.Write(name + " : { ");
-            foreach (object item in A)
-            {
-                Console.Write(item + " ");
-            }
-            Console.WriteLine("}");
-        }
-
     }
 }
